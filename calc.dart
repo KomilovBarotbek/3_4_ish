@@ -114,7 +114,7 @@ class _CalculatorAppState extends State<CalculatorApp> {
         btnText,
         style: TextStyle(
           color: textColor,
-          fontSize: 24,
+          fontSize: 36,
           fontWeight: FontWeight.bold,
         ),
       ),
@@ -130,7 +130,7 @@ class _CalculatorAppState extends State<CalculatorApp> {
           Container(
             alignment: Alignment.centerRight,
             margin: const EdgeInsets.all(10),
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 40),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
             decoration: BoxDecoration(
               color: Colors.grey[800],
             ),
