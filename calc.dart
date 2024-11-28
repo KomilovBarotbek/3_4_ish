@@ -1,6 +1,4 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 void main() {
   runApp(const CalculatorApp());
@@ -15,13 +13,12 @@ class CalculatorApp extends StatefulWidget {
 
 class _CalculatorAppState extends State<CalculatorApp> {
   final TextEditingController _txt = TextEditingController(text: "0");
-  String _a = ''; // Birinchi son
-  String _b = ''; // Ikkinchi son
-  String _oper = ''; // Operator
-  String _result = ''; // Natija
+  String _a = '';
+  String _b = '';
+  String _oper = '';
+  String _result = '';
 
   void calculate() {
-    // Agar ikkala son ham berilgan bo'lsa, hisoblashni amalga oshirish
     if (_a.isNotEmpty && _b.isNotEmpty && _oper.isNotEmpty) {
       double a = double.tryParse(_a) ?? 0;
       double b = double.tryParse(_b) ?? 0;
@@ -42,7 +39,7 @@ class _CalculatorAppState extends State<CalculatorApp> {
           _result = 'Error';
       }
       _txt.text = _result;
-      _a = _result; // Natijani keyingi hisoblash uchun o'zlashtirish
+      _a = _result;
       _b = '';
       _oper = '';
     }
@@ -51,40 +48,52 @@ class _CalculatorAppState extends State<CalculatorApp> {
   void btnPressed(String btnText) {
     setState(() {
       if (btnText == 'C') {
-        // Kalkulyatorni tozalash
         _txt.text = '0';
         _a = '';
         _b = '';
         _oper = '';
+      } else if (btnText == '<') {
+        if (_oper.isEmpty) {
+          _a = _a.isNotEmpty ? _a.substring(0, _a.length - 1) : '';
+          _txt.text = _a.isEmpty ? '0' : _a;
+        } else {
+          _b = _b.isNotEmpty ? _b.substring(0, _b.length - 1) : '';
+          _txt.text = _b.isEmpty ? '0' : _b;
+        }
+      } else if (btnText == '+/-') {
+        if (_oper.isEmpty) {
+          _a = _a.startsWith('-') ? _a.substring(1) : '-$_a';
+          _txt.text = _a;
+        } else {
+          _b = _b.startsWith('-') ? _b.substring(1) : '-$_b';
+          _txt.text = _b;
+        }
+      } else if (btnText == '%') {
+        if (_oper.isEmpty && _a.isNotEmpty) {
+          double a = double.tryParse(_a) ?? 0;
+          _a = (a / 100).toString();
+          _txt.text = _a;
+        } else if (_b.isNotEmpty) {
+          double b = double.tryParse(_b) ?? 0;
+          _b = (b / 100).toString();
+          _txt.text = _b;
+        }
       } else if (btnText == '+' ||
           btnText == '-' ||
           btnText == 'x' ||
           btnText == '/') {
-        // Operatorni tanlash
         if (_a.isNotEmpty && _b.isNotEmpty) {
-          calculate(); // Agar ikkinchi son berilgan bo'lsa, avvalgi hisobni yakunlash
+          calculate();
         }
         _oper = btnText;
       } else if (btnText == '=') {
-        // Hisoblashni yakunlash
         calculate();
       } else {
-        // Sonlarni kiritish
         if (_oper.isEmpty) {
-          // Birinchi sonni kiritish
-          if (_a == '0' && btnText != '.') {
-            _a = btnText; // 0 ni boshqarish
-          } else {
-            _a += btnText;
-          }
+          _a = _a == '0' ? btnText : _a + btnText;
           _txt.text = _a;
         } else {
-          // Ikkinchi sonni kiritish
-          if (_b == '0' && btnText != '.') {
-            _b = btnText;
-          } else {
-            _b += btnText;
-          }
+          _b = _b == '0' ? btnText : _b + btnText;
           _txt.text = _b;
         }
       }
@@ -97,8 +106,9 @@ class _CalculatorAppState extends State<CalculatorApp> {
       style: ElevatedButton.styleFrom(
         backgroundColor: bgColor,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(5),
+          side: BorderSide(color: Colors.white, width: 1),
         ),
+        padding: const EdgeInsets.all(20),
       ),
       child: Text(
         btnText,
@@ -119,12 +129,20 @@ class _CalculatorAppState extends State<CalculatorApp> {
         children: [
           Container(
             alignment: Alignment.centerRight,
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+            margin: const EdgeInsets.all(10),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 40),
+            decoration: BoxDecoration(
+              color: Colors.grey[800],
+            ),
             child: TextField(
               controller: _txt,
               readOnly: true,
               textAlign: TextAlign.right,
-              style: const TextStyle(color: Colors.white, fontSize: 48),
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 48,
+                fontWeight: FontWeight.w300,
+              ),
               decoration: const InputDecoration(
                 border: InputBorder.none,
               ),
@@ -137,26 +155,26 @@ class _CalculatorAppState extends State<CalculatorApp> {
               mainAxisSpacing: 2,
               padding: const EdgeInsets.all(8),
               children: [
-                createButton('C', Colors.orange, Colors.white24),
-                createButton('%', Colors.white, Colors.white24),
-                createButton('+/-', Colors.white, Colors.white24),
-                createButton('/', Colors.white, Colors.white24),
-                createButton('7', Colors.white, Colors.white10),
-                createButton('8', Colors.white, Colors.white10),
-                createButton('9', Colors.white, Colors.white10),
-                createButton('x', Colors.white, Colors.white24),
-                createButton('4', Colors.white, Colors.white10),
-                createButton('5', Colors.white, Colors.white10),
-                createButton('6', Colors.white, Colors.white10),
-                createButton('-', Colors.white, Colors.white24),
-                createButton('1', Colors.white, Colors.white10),
-                createButton('2', Colors.white, Colors.white10),
-                createButton('3', Colors.white, Colors.white10),
-                createButton('+', Colors.white, Colors.white24),
-                createButton('.', Colors.white, Colors.white10),
-                createButton('0', Colors.white, Colors.white10),
-                createButton('<', Colors.white, Colors.white10),
-                createButton('=', Colors.white, Colors.white24),
+                createButton('C', Colors.orange, Colors.grey[850]!),
+                createButton('%', Colors.white, Colors.grey[850]!),
+                createButton('+/-', Colors.white, Colors.grey[850]!),
+                createButton('/', Colors.white, Colors.grey[850]!),
+                createButton('7', Colors.white, Colors.grey[800]!),
+                createButton('8', Colors.white, Colors.grey[800]!),
+                createButton('9', Colors.white, Colors.grey[800]!),
+                createButton('x', Colors.white, Colors.grey[850]!),
+                createButton('4', Colors.white, Colors.grey[800]!),
+                createButton('5', Colors.white, Colors.grey[800]!),
+                createButton('6', Colors.white, Colors.grey[800]!),
+                createButton('-', Colors.white, Colors.grey[850]!),
+                createButton('1', Colors.white, Colors.grey[800]!),
+                createButton('2', Colors.white, Colors.grey[800]!),
+                createButton('3', Colors.white, Colors.grey[800]!),
+                createButton('+', Colors.white, Colors.grey[850]!),
+                createButton('.', Colors.white, Colors.grey[800]!),
+                createButton('0', Colors.white, Colors.grey[800]!),
+                createButton('<', Colors.white, Colors.grey[800]!),
+                createButton('=', Colors.white, Colors.grey[850]!),
               ],
             ),
           ),
